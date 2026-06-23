@@ -5,6 +5,8 @@ import br.com.joaodddev.digitalwallet.domain.exception.UserAlreadyExistsExceptio
 import br.com.joaodddev.digitalwallet.domain.exception.UserNotFoundException;
 import br.com.joaodddev.digitalwallet.domain.exception.WalletAlreadyExistsException;
 import br.com.joaodddev.digitalwallet.domain.exception.WalletNotFoundException;
+import br.com.joaodddev.digitalwallet.domain.exception.InsufficientBalanceException;
+import br.com.joaodddev.digitalwallet.domain.exception.InvalidTransactionAmountException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,6 +34,24 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problem.setTitle("User Not Found");
         problem.setType(URI.create("/errors/user-not-found"));
+        problem.setProperty("timestamp", Instant.now());
+        return problem;
+    }
+
+    @ExceptionHandler(InvalidTransactionAmountException.class)
+    public ProblemDetail handleInvalidTransactionAmount(InvalidTransactionAmountException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+        problem.setTitle("Invalid Transaction Amount");
+        problem.setType(URI.create("/errors/invalid-transaction-amount"));
+        problem.setProperty("timestamp", Instant.now());
+        return problem;
+    }
+
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ProblemDetail handleInsufficientBalance(InsufficientBalanceException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+        problem.setTitle("Insufficient Balance");
+        problem.setType(URI.create("/errors/insufficient-balance"));
         problem.setProperty("timestamp", Instant.now());
         return problem;
     }
