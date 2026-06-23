@@ -7,6 +7,7 @@ import br.com.joaodddev.digitalwallet.domain.exception.WalletAlreadyExistsExcept
 import br.com.joaodddev.digitalwallet.domain.exception.WalletNotFoundException;
 import br.com.joaodddev.digitalwallet.domain.exception.InsufficientBalanceException;
 import br.com.joaodddev.digitalwallet.domain.exception.InvalidTransactionAmountException;
+import br.com.joaodddev.digitalwallet.domain.exception.SameWalletTransferException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -52,6 +53,15 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
         problem.setTitle("Insufficient Balance");
         problem.setType(URI.create("/errors/insufficient-balance"));
+        problem.setProperty("timestamp", Instant.now());
+        return problem;
+    }
+
+    @ExceptionHandler(SameWalletTransferException.class)
+    public ProblemDetail handleSameWalletTransfer(SameWalletTransferException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+        problem.setTitle("Invalid Transfer");
+        problem.setType(URI.create("/errors/same-wallet-transfer"));
         problem.setProperty("timestamp", Instant.now());
         return problem;
     }
