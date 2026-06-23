@@ -3,6 +3,8 @@ package br.com.joaodddev.digitalwallet.interfaces.exception;
 import br.com.joaodddev.digitalwallet.domain.exception.DomainException;
 import br.com.joaodddev.digitalwallet.domain.exception.UserAlreadyExistsException;
 import br.com.joaodddev.digitalwallet.domain.exception.UserNotFoundException;
+import br.com.joaodddev.digitalwallet.domain.exception.WalletAlreadyExistsException;
+import br.com.joaodddev.digitalwallet.domain.exception.WalletNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,6 +41,24 @@ public class GlobalExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
         problem.setTitle("Domain Validation Error");
         problem.setType(URI.create("/errors/domain-validation"));
+        problem.setProperty("timestamp", Instant.now());
+        return problem;
+    }
+
+    @ExceptionHandler(WalletAlreadyExistsException.class)
+    public ProblemDetail handleWalletAlreadyExists(WalletAlreadyExistsException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Wallet Already Exists");
+        problem.setType(URI.create("/errors/wallet-already-exists"));
+        problem.setProperty("timestamp", Instant.now());
+        return problem;
+    }
+
+    @ExceptionHandler(WalletNotFoundException.class)
+    public ProblemDetail handleWalletNotFound(WalletNotFoundException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Wallet Not Found");
+        problem.setType(URI.create("/errors/wallet-not-found"));
         problem.setProperty("timestamp", Instant.now());
         return problem;
     }
